@@ -21,10 +21,14 @@ class NGLPConfig(apps.AppConfig):
     def ready(self):
         from utils.models import LogEntry
 
-    def send_event(self, event):
-        # put event into JSON
-        # POST request
-        # find api endpoint
+    def send_event(self, *, event, request):
+        event = {
+            'url': request.build_absolute_uri(),
+            'referrer': request.META.get('HTTP_REFERRER'),
+            'user_agent': request.META.get('HTTP_USER_AGENT'),
+            'ip' : request.META.get('REMOTE_ADDR'),
+            **event,
+        }
 
         try:
             response = requests.post(self.analytics_url, data=json.dumps(event))
