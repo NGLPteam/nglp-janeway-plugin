@@ -1,3 +1,4 @@
+from events import logic as events_logic
 from utils import plugins
 from utils.install import update_settings
 
@@ -28,3 +29,13 @@ def install():
 
 def hook_registry():
     return
+
+def register_for_events():
+    # plugin modules can't be imported until plugin is loaded
+    # plugin will need to be written elsewhere first before we can load it.
+    from plugins.nglp import events
+
+    events_logic.Events.register_for_event(
+        events_logic.Events.ON_ARTICLE_ACCESS,
+        events.on_article_access,
+    )
