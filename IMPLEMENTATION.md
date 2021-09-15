@@ -29,14 +29,14 @@ Janeway are adding a new `ON_ARTICLE_ACCESS` event for this in https://github.co
 These are already covered by various existing events. We will need to map these to a documented generic list of analytics event types.
 
 
-# Export events
+## Export events
 
 We're going to skip these, as I don't think Janeway has an export for reference managers.
 
 Question: Unless we want to attach this to the JATS XML export?
 
 
-# Join and Leave events
+## Join and Leave events
 
 These aren't available via Janeway events, but we can attach to Django post_save and pre_delete signals on `AccountRole` model objects. `AccountRole`
 represents a relationship between a user and a journal, with types such as "author", "editor", "reviewer", "copyeditor", "production", "typesetter".
