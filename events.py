@@ -6,6 +6,9 @@ from django.utils.deprecation import MiddlewareMixin
 from django.core.urlresolvers import ResolverMatch
 from django.conf import settings
 import mimetypes
+import requests
+import json
+from logging import Logger
 
 from core import models as core_models
 from submission.models import Article
@@ -40,12 +43,81 @@ def on_article_access(article: Article, article_access: ArticleAccess, request: 
 
     return send_event(event=event, request=request)
 
+def on_article_submitted(article: Article, request: HttpRequest, **kwargs):
+    # When an article is submitted for review by an author
+    event = {
+      "event": "submit",
+      "object_type": "Article",
+      "object_id": list(
+          filter(None, [article.identifier.identifier,
+                        article.get_identifier("pubid"),
+                        article.get_identifier("id"),
+                        article.get_identifier("uri"),
+                        article.get_doi()])
+      )
+    }
+
+    return send_event(event=event, request=request)
+
+def on_review_complete():
+    # When an article review has been completed
+    event = {
+        "event": "review",
+        "object_type": "Article",
+        "object_id": list(
+            filter(None, [article.identifier.identifier,
+                          article.get_identifier("pubid"),
+                          article.get_identifier("id"),
+                          article.get_identifier("uri"),
+                          article.get_doi()])
+        )
+    }
+
+    return send_event(event=event, request=request)
+
+
+def on_article_accepted():
+    # When an article is accepted for publication
+    event = {
+      "event": "accept",
+      "object_type": "Article",
+      "object_id": list(
+          filter(None, [article.identifier.identifier,
+                        article.get_identifier("pubid"),
+                        article.get_identifier("id"),
+                        article.get_identifier("uri"),
+                        article.get_doi()])
+      )
+    }
+
+    return send_event(event=event, request=request)
+
+
+def on_article_published():
+    # When an article is published by a journal
+    event = {
+      "event": "publish",
+      "object_type": "Article",
+      "object_id": list(
+          filter(None, [article.identifier.identifier,
+                        article.get_identifier("pubid"),
+                        article.get_identifier("id"),
+                        article.get_identifier("uri"),
+                        article.get_doi()])
+      )
+    }
+
+    return send_event(event=event, request=request)
+
+
+def on_article_declined():
+    pass
+
+
+
 def send_event(*, event, request):
     event = {
-        'url': request.build_absolute_uri(),
-        'referrer': request.META.get('HTTP_REFERRER'),
-        'user_agent': request.META.get('HTTP_USER_AGENT'),
-        'ip' : request.META.get('REMOTE_ADDR'),
+        'user_id': request.META.get('USER'),
         **event,
     }
 
@@ -53,5 +125,6 @@ def send_event(*, event, request):
         response = requests.post(settings.NGLP_ANALYTICS_API, data=json.dumps(event))
         response.raise_for_status()
     except requests.exceptions.RequestException:
-        logger.exception(msg="failed to send event.")
+        Logger.exception(msg="failed to send event.")
+
 

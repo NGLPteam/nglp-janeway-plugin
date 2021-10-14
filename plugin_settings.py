@@ -1,3 +1,5 @@
+import functools
+
 from events import logic as events_logic
 from utils import plugins
 from utils.install import update_settings
@@ -39,3 +41,25 @@ def register_for_events():
         events_logic.Events.ON_ARTICLE_ACCESS,
         events.on_article_access,
     )
+
+    events_logic.Events.register_for_event(
+        events_logic.Events.ON_ARTICLE_SUBMITTED,
+        events.on_article_submitted,
+    )
+    #
+    # events_logic.Events.register_for_event(
+    #     events_logic.Events.ON_ARTICLE_ACCEPTED,
+    #     events.on_article_submitted,
+    # )
+
+    # for name in dir(events_logic.Events):
+    #     event_name = getattr(events_logic.Events, name)
+    #     if isinstance(event_name, str):
+    #         events_logic.Events.register_for_event(event_name, functools.partial(on_any_event, event_name))
+
+
+def on_any_event(event_name, /, *args, **kwargs):
+    print("EVENT!", event_name, args, kwargs)
+
+# functools.partial(f, a)(b, c) == f(a, b, c)
+# functools.partial(f, x=x)(b, c) == f(b, c, x=x)
