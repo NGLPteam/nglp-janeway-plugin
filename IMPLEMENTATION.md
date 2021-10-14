@@ -26,7 +26,10 @@ Janeway are adding a new `ON_ARTICLE_ACCESS` event for this in https://github.co
 
 ## Workflow transition events
 
-These are already covered by various existing events. We will need to map these to a documented generic list of analytics event types.
+These are already covered by various existing events. We have chosen the workflow events that we are currently 
+interested in: when an article is submitted, reviewed, accepted and published. In Janeway, these are handled by the 
+```submission```, ```review``` and ```journal``` views. We are using the ```ON_ARTICLE_SUBMITTED```, 
+```ON_REVIEW_COMPLETE```, ```ON_ARTICLE_ACCEPTED```, and ```ON_ARTICLE_PUBLISHED``` events.
 
 
 ## Export events
