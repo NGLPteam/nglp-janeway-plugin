@@ -28,9 +28,12 @@ Janeway are adding a new `ON_ARTICLE_ACCESS` event for this in https://github.co
 
 These are already covered by various existing events. We have chosen the workflow events that we are currently 
 interested in: when an article is submitted, reviewed, accepted and published. In Janeway, these are handled by the 
-```submission```, ```review``` and ```journal``` views. We are using the ```ON_ARTICLE_SUBMITTED```, 
-```ON_REVIEW_COMPLETE```, ```ON_ARTICLE_ACCEPTED```, and ```ON_ARTICLE_PUBLISHED``` events.
+`submission`, `review` and `journal` views. We are using the `ON_ARTICLE_SUBMITTED`, 
+`ON_REVIEW_COMPLETE`, `ON_ARTICLE_ACCEPTED`, and `ON_ARTICLE_PUBLISHED` events.
 
+
+Workflow transition events can be configured in `plugin_config.py` by adding the event you want to capture to the 
+`NGLP_ANALYTICS_EVENT_CONFIG` dictionary. 
 
 ## Export events
 

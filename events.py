@@ -13,6 +13,7 @@ from logging import Logger
 from core import models as core_models
 from submission.models import Article
 from metrics.models import ArticleAccess
+from plugins.nglp.plugin_config import NGLP_ANALYTICS_EVENT_CONFIG
 
 ACCESS_TYPE_MAPPING = {
     "download": "request",
@@ -45,58 +46,27 @@ def on_article_access(article: Article, article_access: ArticleAccess, request: 
 
 def on_article_submitted(article: Article, request: HttpRequest, **kwargs):
     # When an article is submitted for review by an author
-    event = {
-      "event": "submit",
-      "object_type": "Article",
-      "object_id": list(
-          filter(None, [article.identifier.identifier,
-                        article.get_identifier("pubid"),
-                        article.get_identifier("id"),
-                        article.get_identifier("uri"),
-                        article.get_doi()])
-      )
-    }
+    return on_workflow_event(article, request, "submit", **kwargs)
 
-    return send_event(event=event, request=request)
-
-def on_review_complete():
+def on_review_complete(article: Article, request: HttpRequest, **kwargs):
     # When an article review has been completed
-    event = {
-        "event": "review",
-        "object_type": "Article",
-        "object_id": list(
-            filter(None, [article.identifier.identifier,
-                          article.get_identifier("pubid"),
-                          article.get_identifier("id"),
-                          article.get_identifier("uri"),
-                          article.get_doi()])
-        )
-    }
-
-    return send_event(event=event, request=request)
+    return on_workflow_event(article, request, "review", **kwargs)
 
 
-def on_article_accepted():
+def on_article_accepted(article: Article, request: HttpRequest, **kwargs):
     # When an article is accepted for publication
-    event = {
-      "event": "accept",
-      "object_type": "Article",
-      "object_id": list(
-          filter(None, [article.identifier.identifier,
-                        article.get_identifier("pubid"),
-                        article.get_identifier("id"),
-                        article.get_identifier("uri"),
-                        article.get_doi()])
-      )
-    }
-
-    return send_event(event=event, request=request)
+    return on_workflow_event(article, request, "accept", **kwargs)
 
 
-def on_article_published():
+def on_article_published(article: Article, request: HttpRequest, **kwargs):
+    return on_workflow_event(article, request, "publish", **kwargs)
     # When an article is published by a journal
-    event = {
-      "event": "publish",
+
+
+def on_workflow_event(article: Article, request: HttpRequest, event=None,  **kwargs):
+    # When an article is published by a journal
+    event_body = {
+      "event": NGLP_ANALYTICS_EVENT_CONFIG[event],
       "object_type": "Article",
       "object_id": list(
           filter(None, [article.identifier.identifier,
@@ -107,10 +77,11 @@ def on_article_published():
       )
     }
 
-    return send_event(event=event, request=request)
+    return send_event(event=event_body, request=request)
 
 
 def on_article_declined():
+    # not in scope for MVP
     pass
 
 
