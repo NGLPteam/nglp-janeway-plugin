@@ -13,7 +13,7 @@ from logging import Logger
 from core import models as core_models
 from submission.models import Article
 from metrics.models import ArticleAccess
-from plugins.nglp.plugin_config import NGLP_ANALYTICS_EVENT_CONFIG
+from plugins.nglp.plugin_config import NGLP_ANALYTICS_EVENT_CONFIG, NGLP_ANALYTICS_API
 
 ACCESS_TYPE_MAPPING = {
     "download": "request",
@@ -93,7 +93,7 @@ def send_event(*, event, request):
     }
 
     try:
-        response = requests.post(settings.NGLP_ANALYTICS_API, data=json.dumps(event))
+        response = requests.post(NGLP_ANALYTICS_API, data=json.dumps(event))
         response.raise_for_status()
     except requests.exceptions.RequestException:
         Logger.exception(msg="failed to send event.")
