@@ -67,14 +67,14 @@ def on_workflow_event(article: Article, request: HttpRequest, event=None,  **kwa
     # When an article is published by a journal
     event_body = {
       "event": NGLP_ANALYTICS_EVENT_CONFIG[event],
-      "object_type": "Article",
+      "object_type": "article",
       "object_id": list(
           filter(None, [article.identifier.identifier,
                         article.get_identifier("pubid"),
                         article.get_identifier("id"),
                         article.get_identifier("uri"),
                         article.get_doi()])
-      )
+      ),
     }
 
     return send_event(event=event_body, request=request)
@@ -87,15 +87,15 @@ def on_article_declined():
 
 
 def send_event(*, event, request):
-    event = {
+    unpacked_event = {
         'user_id': request.META.get('USER'),
         **event,
     }
 
     try:
-        response = requests.post(NGLP_ANALYTICS_API, data=json.dumps(event))
+        response = requests.post(NGLP_ANALYTICS_API, data=json.dumps(unpacked_event))
         response.raise_for_status()
     except requests.exceptions.RequestException:
-        Logger.exception(msg="failed to send event.")
+        print("failed to send event")
 
 

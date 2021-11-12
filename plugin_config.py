@@ -1,6 +1,8 @@
 from events.logic import Events
+from django.conf import settings
 
-NGLP_ANALYTICS_API = "http://127.0.0.1:8002/api/"
+
+NGLP_ANALYTICS_API = settings.NGLP_ANALYTICS_API
 
 NGLP_ANALYTICS_EVENT_CONFIG = {
     Events.ON_ARTICLE_SUBMITTED: "submit",
